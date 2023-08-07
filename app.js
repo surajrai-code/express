@@ -1,27 +1,32 @@
-const express=require('express');  //1.express module ko access kar rhe hain in express variable
+const express = require('express');
 
-const app=express(); //2.express module ek function export karta hai isliye ye likha hai
+const bodyParser= require('body-parser'); //7.yahan bodyparser mai sara conntent le rha hun IMPORTING
 
-app.use((req,res,next)=>{   //3.ek function pass kra rhe hain jisme 3 arguments hain jo express js pass kr rha hai aur isme next ek function hai jo allow the request to travel on to the next middleware
-    console.log('in the middleware');
-    next(); //4. ye karne se hi vo next middleware next use vale mai jayega...
-});
+const app = express();
 
-app.use((req,res,next)=>{
-    console.log('in the next middleware');
-    //5. isme express js default response header html daal deta hai 
-    // res.send("<h1>hello we are also here</h1>");
-    res.send('{ key1: value }') //6.isme bhi header html type hi bnega.
+app.use(bodyParser.urlencoded ({extended: false})); //8.ye ek middleware register karta hai, aur end mai next hota hai...ye bas form ki body parse karta hai not json,files unke liye dusra parser chaiye honge....ye apne aap parse kr dega jo body form se aa ri hai...
+
+app.use('/', (req, res, next) => {  
+    console.log('in the next middleware3');
+    // res.send("<h1>This is first express js</h1>")
+    next(); //4. ye wala everytime work krega jab jab hum koi bhi request karenge(pehle ye chalega then hum jab dusre request krenge to vo continue hoga)
 })
 
+app.use('/add-product', (req, res, next) => { //1. isme '/add-product' path dala hai.
+    console.log('in the next middleware1');
+    res.send("<form action='/product' method='POST'><input type='text' name='title'><input type='text' name='size'><button>Add Product</button></form>")
+    // next();    //2. hume next daalne ki jarurat nahi hai kyunki response ek baar ayega...
+})
+app.post('/product',(req, res, next)=>{
+    console.log(req.body);//6. isme jo data aa rha hai vo abhi parsed ni hai isliye console mai undefined aayega, req.body does not parse the incoming request body isliye ek parser register karna padhega install krna padhega...npm install --save body-parser...
+    res.redirect('/p');  //5.ye mujhe /p pe return kar dega...awwesome feature of express js.
+})
+app.use('/', (req, res, next) => {  //3. '/' ka mtlb bas ye hona chaiye aur baaki kuch bhi daal lo chalega
+    console.log('in the next middleware2');
+    res.send("<h1>This is express js</h1>")
+})
 
-// const server= http.createServer(app);
-
-app.listen(3000,()=>{
+app.listen(3000, () => {
     console.log('Request has been made');
 })
-// 7. app.listen ek function hai express js mai inside, jo vahin http se create server bna de rha hai, hume bas yahan port dena hai bas by calling. now, yahan se maine const http=require('http') hta diya ab ye pura express js ban gya hai.
-// app.listen=function listen(){
-//     var server=http.createserver(this)
-//     return server.listen.apply(server, arguments);
-// }
+// 9.hum app.use ke jagah app.post bhi likh skte hain if post request hai to, app.put, patch, delete bhi karenge aage.
