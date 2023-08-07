@@ -1,0 +1,15 @@
+header ul {
+    display: flex;
+    justify-content: flex-start;
+}
+header ul li{
+    /* padding: 2vw; */
+    text-decoration: none;
+    list-style: none;
+    margin: 0 35px;
+    border: 2px solid #bbc828;
+    
+}
+main h1{
+    background-color: #bbc828;
+}
